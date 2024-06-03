@@ -1,48 +1,89 @@
-// selecting popup box popup overlay button
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-var popupoverlay = document.querySelector(".popup-overlay")
-var popupbox = document.querySelector(".popup-box")
-var addpopupbutton = document.getElementById("add-popup-button")
+const appSettings = {
+    databaseURL: "https://playground-e1373-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+const app = initializeApp(appSettings);
+const database = getDatabase(app);
+const tasksInDB = ref(database, "tasks");
 
-addpopupbutton.addEventListener("click", function () {
-    popupoverlay.style.display = 'block'
-    popupbox.style.display = 'block'
-})
+const popupOverlay = document.getElementById("popup-overlay");
+const popupBox = document.getElementById("popup-box");
+const addPopupButton = document.getElementById("add-popup-button");
+const cancelPopup = document.getElementById("cancel-popup");
+const container = document.querySelector('.container');
+const addWork = document.getElementById("add-work");
+const workTitle = document.getElementById("add-work-input");
+const employee = document.getElementById("add-employee-input");
+const workDescription = document.getElementById("work-description-input");
 
-//select cancel button
-var cancelpopup = document.getElementById("cancel-popup")
+addPopupButton.addEventListener("click", function () {
+    popupOverlay.style.display = 'block';
+    popupBox.style.display = 'block';
+});
 
-cancelpopup.addEventListener("click", function (event) {
-    event.preventDefault()
-    popupoverlay.style.display = 'none'
-    popupbox.style.display = 'none'
-})
+cancelPopup.addEventListener("click", function (event) {
+    event.preventDefault();
+    popupOverlay.style.display = 'none';
+    popupBox.style.display = 'none';
+});
 
-//select container,add-work,add-title-input,add-employee-input,work-description-input
+popupOverlay.addEventListener("click", function () {
+    popupOverlay.style.display = 'none';
+    popupBox.style.display = 'none';
+});
 
-var container = document.querySelector('.container')
-var addwork = document.getElementById("add-work")
-var worktitle = document.getElementById("add-work-input")
-var employee = document.getElementById("add-employee-input")
-var workdescription = document.getElementById("work-description-input")
+addWork.addEventListener('click', function (event) {
+    event.preventDefault();
+    let task = {
+        title: workTitle.value,
+        employee: employee.value,
+        description: workDescription.value
+    };
 
-addwork.addEventListener('click', function (event) {
-    event.preventDefault()
-    var div = document.createElement("div")
-    div.setAttribute('class', 'work-container')
-    div.innerHTML = `<h2>${worktitle.value}</h2>
-    <h4>${employee.value}</h4>
-    <p>${workdescription.value}</p>
-    <button onclick="deletebook(event)">Delete</button>`
-    container.append(div)
-    popupoverlay.style.display = 'none'
-    popupbox.style.display = 'none'
+    push(tasksInDB, task);
 
-    worktitle.value = '';
+    popupOverlay.style.display = 'none';
+    popupBox.style.display = 'none';
+
+    workTitle.value = '';
     employee.value = '';
-    workdescription.value = '';
-})
+    workDescription.value = '';
+});
 
-function deletebook(event) {
-    event.target.parentElement.remove()
+onValue(tasksInDB, function (snapshot) {
+    if (snapshot.exists()) {
+        let tasksArray = Object.entries(snapshot.val());
+        clearTasks();
+
+        for (let i = 0; i < tasksArray.length; i++) {
+            let currentTask = tasksArray[i];
+            let currentTaskID = currentTask[0];
+            let currentTaskValue = currentTask[1];
+
+            appendTaskToContainer(currentTaskID, currentTaskValue);
+        }
+    } else {
+        container.innerHTML = "<h3>No tasks available.</h3>";
+    }
+});
+
+function clearTasks() {
+    container.innerHTML = "";
+}
+
+function appendTaskToContainer(taskID, task) {
+    let div = document.createElement("div");
+    div.setAttribute('class', 'work-container');
+    div.innerHTML = `<h2>${task.title}</h2>
+                     <h4>${task.employee}</h4>
+                     <p>${task.description}</p>
+                     <button onclick="deleteTask('${taskID}')">Delete</button>`;
+    container.append(div);
+}
+
+window.deleteTask = function (taskID) {
+    let taskRef = ref(database, `tasks/${taskID}`);
+    remove(taskRef);
 }
