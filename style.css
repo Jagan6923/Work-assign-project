@@ -18,11 +18,11 @@ body {
 }
 
 .work-container {
-    padding: 15px;
-    width: 25%;
+    padding: 25px;
+    width: 20%;
     background-color: #edeae1;
     border-radius: 10px;
-    margin: 30px;
+    margin: 10px;
     display: inline-block;
     vertical-align: top;
 }
