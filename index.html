@@ -13,25 +13,24 @@
         <h1>Workassign</h1>
     </div>
 
-    <div class="container">
+    <div class="container"></div>
 
-
-    </div>
-    <div class="popup-overlay">
-    </div>
-    <div class="popup-box">
+    <div class="popup-overlay" id="popup-overlay"></div>
+    <div class="popup-box" id="popup-box">
         <h2>Add work</h2>
-        <form>
-            <input type="text" placeholder="Type of Work" id="add-work-input">
-            <input type="text" placeholder="Employee Name" id="add-employee-input">
-            <textarea name="" id="work-description-input" placeholder="Work description"></textarea>
+        <form id="work-form">
+            <input type="text" placeholder="Type of Work" id="add-work-input" required>
+            <input type="text" placeholder="Employee Name" id="add-employee-input" required>
+            <textarea id="work-description-input" placeholder="Work description" required></textarea>
             <button id="add-work" class="addpopbutton">ADD</button>
             <button id="cancel-popup" class="addpopbutton">CANCEL</button>
         </form>
     </div>
 
     <button class="add-button" id="add-popup-button">+</button>
-    <script src="script.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
+    <script src="script.js" type="module"></script>
 </body>
 
 </html>
